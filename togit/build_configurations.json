@@ -1,1 +1,3 @@
-{"replace": [{"name": "info.json", "content": "{'mock_file': True}"}]}
+{"replace": [
+  {"name": "info.json", "content": "{'name':'aeiou', 'email':'yourname@.com', 'github_key': 'key_here','mock_file': True}"}
+]}

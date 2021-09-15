@@ -128,7 +128,7 @@ def build_configurations(dir, data):
     if 'replace' in data:
         for replacer in data['replace']:
             replacements.append({'name':replacer['name']
-                                 , 'content': replacer['content']})
+                                 , 'content': replacer['content'].replace("'", '"')})
 
 
 def get_all_files_from(file_paths, dir = None):
