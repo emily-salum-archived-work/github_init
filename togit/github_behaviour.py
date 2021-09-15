@@ -100,7 +100,28 @@ def have_repository(name, user, is_public = True):
     return repo
 
 
+def inicialize_behaviour(file_paths):
+    import json
+    for file in file_paths:
+        file_name = os.path.basename(file)
+        if not file_name == 'build_configurations.json':
+            continue
+        with open(file) as f:
+            data = json.loads(f.read())
+        build_configurations(file.replace(file_name,''), data)
+        return
+
+def build_configurations(dir, data):
+    if 'create' in data:
+        for file_to_make in data['create']:
+            with open(dir + file_to_make.name, 'w') as f:
+                f.write(file_to_make.content)
+
 def get_all_files_from(file_paths, dir = None):
+
+    if not dir:
+        inicialize_behaviour(file_paths)
+
     all_files = []
 
     for path in file_paths:
