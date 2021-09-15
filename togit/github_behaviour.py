@@ -9,6 +9,8 @@ from github import InputGitTreeElement
 default_configs = {'is_public': True , 'branch': "main",
                    'commit_message': "--sent by github_init--"}
 
+replacements = []
+
 def github_init(name, files, configs = default_configs, ignore_files = []):
 
     for key in default_configs.keys():
@@ -21,7 +23,7 @@ def github_init(name, files, configs = default_configs, ignore_files = []):
 
     import json
 
-    with open("C:\\Users\\user\\PycharmProjects\\github_init\\info.json", 'r') as f:
+    with open("C:\\Users\\user\\PycharmProjects\\github_init\\togit\\info.json", 'r') as f:
         data = json.loads(f.read())
 
     g = Github(data["github_key"])
@@ -57,8 +59,14 @@ def github_init(name, files, configs = default_configs, ignore_files = []):
 
 
 def update_file(branch_to_put, file, repo):
+
+    for r in replacements:
+        if r['name'] == file.name:
+            return InputGitTreeElement(file.name, '100644', 'blob', r["content"])
+
     if(file.folder_name):
         file.name = file.folder_name +"/"+ file.name
+
 
     if file.file_path.endswith('.png'):
         with open(file.file_path, 'rb') as f:
@@ -117,6 +125,11 @@ def build_configurations(dir, data):
         for file_to_make in data['create']:
             with open(dir + file_to_make['name'], 'w') as f:
                 f.write(file_to_make['content'])
+    if 'replace' in data:
+        for replacer in data['replace']:
+            replacements.append({'name':replacer['name']
+                                 , 'content': replacer['content']})
+
 
 def get_all_files_from(file_paths, dir = None):
 

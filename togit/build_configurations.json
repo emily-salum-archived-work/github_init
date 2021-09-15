@@ -1,1 +1,1 @@
-{"create": [{"name": "info.json", "content": "{}"}]}
+{"replace": [{"name": "info.json", "content": "{}"}]}
