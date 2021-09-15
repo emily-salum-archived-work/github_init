@@ -59,13 +59,13 @@ def github_init(name, files, configs = default_configs, ignore_files = []):
 
 
 def update_file(branch_to_put, file, repo):
+    file_name = file.name
+    if (file.folder_name):
+        file_name = file.folder_name + "/" + file.name
 
     for r in replacements:
         if r['name'] == file.name:
-            return InputGitTreeElement(file.name, '100644', 'blob', r["content"])
-
-    if(file.folder_name):
-        file.name = file.folder_name +"/"+ file.name
+            return InputGitTreeElement(file_name, '100644', 'blob', r["content"])
 
 
     if file.file_path.endswith('.png'):
@@ -73,13 +73,13 @@ def update_file(branch_to_put, file, repo):
             data = f.read()
             data = base64.b64encode(data).decode()
             sh = repo.create_git_blob(data, "base64").sha
-            return InputGitTreeElement(file.name, '100644', 'blob', sha=sh)
+            return InputGitTreeElement(file_name, '100644', 'blob', sha=sh)
     print("creating file : " + file.file_path)
     with open(file.file_path) as f:
         data = f.read()
 
 
-    return InputGitTreeElement(file.name, '100644', 'blob', data)
+    return InputGitTreeElement(file_name, '100644', 'blob', data)
 
 
 
