@@ -128,8 +128,8 @@ def get_all_files_from(file_paths, dir = None):
     for path in file_paths:
         if os.path.isdir(path):
             nlist = [path + "/" + x for x in os.listdir(path)]
-
             inicialize_behaviour(nlist)
+            nlist = [path + "/" + x for x in os.listdir(path)]
             path = os.path.basename(path)
 
             if path == "__pycache__":
