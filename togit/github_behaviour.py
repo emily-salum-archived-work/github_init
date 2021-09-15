@@ -115,13 +115,13 @@ def inicialize_behaviour(file_paths):
 def build_configurations(dir, data):
     if 'create' in data:
         for file_to_make in data['create']:
-            with open(dir + file_to_make.name, 'w') as f:
-                f.write(file_to_make.content)
+            with open(dir + file_to_make['name'], 'w') as f:
+                f.write(file_to_make['content'])
 
 def get_all_files_from(file_paths, dir = None):
 
-    if not dir:
-        inicialize_behaviour(file_paths)
+
+
 
     all_files = []
 
@@ -129,6 +129,7 @@ def get_all_files_from(file_paths, dir = None):
         if os.path.isdir(path):
             nlist = [path + "/" + x for x in os.listdir(path)]
 
+            inicialize_behaviour(nlist)
             path = os.path.basename(path)
 
             if path == "__pycache__":
