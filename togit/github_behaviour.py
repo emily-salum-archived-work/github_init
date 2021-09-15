@@ -104,6 +104,7 @@ def inicialize_behaviour(file_paths):
     import json
     for file in file_paths:
         file_name = os.path.basename(file)
+        print(file_name)
         if not file_name == 'build_configurations.json':
             continue
         with open(file) as f:
