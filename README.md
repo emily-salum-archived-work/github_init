@@ -13,7 +13,7 @@ And yes, I know you can setup github to push files on change. If you dont though
 1. Creates repository with a given name
 2. Adds files in specified paths 
 3. Ignores specific files as instructed.
-4. Within every path it visits, it will look for a 'build_configurations.json' file, which specifies actions that need to be made in that folder. Specifically:
+4. Within every path it visits, it will look for a 'build_configurations.json' file, which specifies actions that need to be made in that folder. This was mainly used in the past when I was not aware of the ability to use environment variables and wanted to send my projects to github, but they had secretive data on it. Specifically, you can use:
     1. "Replace": Replaces content in specific file to be something different inside github. 
     2. "Create": Creates file in github. 
 
@@ -25,18 +25,19 @@ And yes, I know you can setup github to push files on change. If you dont though
 
 You can use them already through the following files: 
 
-### main.js
+- main.js
 
-This file works with [Builder Helper]. Install it and make sure its within reach from importing.
+This file works with [Builder Helper](https://github.com/emilymarquessalum/builder_helper).
 Running main.js will get the latest project submitted to the loaders connection, using that information
 to build the repository. 
 
-### github_args.py
+- github_args.py
 
 This file uses sys arguments to run the commands. This was made to connect to javascrypt code using 
 [Python Shell](https://www.npmjs.com/package/python-shell).
 
-Otherwise, connect directly to 'github_behaviour.py' and use your own methods.
+
+- Otherwise, connect directly to 'github_behaviour.py' and use your own methods.
 
 ## Example Of Usage
 
@@ -50,13 +51,15 @@ Both were used to specify the creation of this repository. It shows how to copy 
 
 - Github communication can be done through any program that connects to this. 
 
-For Project Builder for example, by calling this it can setup a repository for a newly started project while doing the other processes, 
-which for the purposes of project builder.. is simply great. 
+For Project Builder for example (see below), by calling this it can setup a repository for a newly started project while doing other processes, 
+which for the purposes of project builder is great! 
+
 - Offers specific commands and possibility for expansion. 
 
-Although not many are implemented, this can later be expanded. And the ones that are in fact already implemented
-are usefull I think.
+Although not many are implemented, the ones that are can be usefull to me.
 
 ## Associated Programs:
 
--Builder Helper, but only if you were to run main.py. 
+- [Builder Helper](https://github.com/emilymarquessalum/builder_helper).
+- [project_builder]().
+- [portfolio_builder](https://github.com/emilymarquessalum/portfolio-builder).
