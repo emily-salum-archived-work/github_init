@@ -1,7 +1,9 @@
 import sys
 import json
 
-from togit import github_behaviour
+sys.path.append("..")
+sys.path.append(".")
+import github_behaviour
 
 if __name__ == '__main__':
     name = sys.argv[1]
@@ -10,4 +12,5 @@ if __name__ == '__main__':
 
     file_paths = github_behaviour.get_all_files_from(update_paths)
 
-    github_behaviour.github_init(name, file_paths, is_public)
+    configs = {'is_public': is_public}
+    github_behaviour.github_init(name, file_paths, configs)

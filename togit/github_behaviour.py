@@ -68,7 +68,7 @@ def update_file(branch_to_put, file, repo):
             return InputGitTreeElement(file_name, '100644', 'blob', r["content"])
 
 
-    if file.file_path.endswith('.png'):
+    if file.file_path.endswith('.png') or file.file_path.endswith('.jpg'):
         with open(file.file_path, 'rb') as f:
             data = f.read()
             data = base64.b64encode(data).decode()
