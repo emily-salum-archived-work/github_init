@@ -6,6 +6,6 @@ if __name__ == '__main__':
 
         github_behaviour.github_init('github_init',
             [init_path + 'togit',
-             {"str": init_path + 'empty_file', "replace": init_path + "empty_test"}],
+             {"str": init_path + 'empty_file', "replace":  "empty_test"}],
             {'commit_message': "config_test"},
             [init_path + 'info.json'])
