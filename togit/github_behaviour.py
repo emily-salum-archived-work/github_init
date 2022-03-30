@@ -6,24 +6,28 @@ from github import Github, InputGitAuthor
 
 from github import InputGitTreeElement
 
-default_configs = {'is_public': True , 'branch': "main",
-                   'commit_message': "--sent by github_init--"}
+from togit.build_configurations import inicialize_behaviour
+from togit.structure_classes import Folder, File
+
+default_configs = {'is_public': True, 'branch': "main",
+                   'commit_message': "--sent by github_init--",
+                   "ignore_files": []}
 
 replacements = []
 
-def github_init(name, files, configs = default_configs, ignore_files = []):
+def github_init(name, files, configs = default_configs):
 
     for key in default_configs.keys():
         if key in configs.keys():
             continue
         configs[key] = default_configs[key]
 
-    if isinstance(files[0],str):
+    if not isinstance(files[0], File):
         files = get_all_files_from(files)
 
     import json
 
-    with open("C:\\Users\\user\\PycharmProjects\\github_init\\togit\\info.json", 'r') as f:
+    with open("C:\\Users\\user\\Desktop\\emily\\projects\\@python_projects\\@Automation\\github_init\\togit\\info.json", 'r') as f:
         data = json.loads(f.read())
 
     g = Github(data["github_key"])
@@ -45,7 +49,7 @@ def github_init(name, files, configs = default_configs, ignore_files = []):
     element_list = list()
 
     for file in files:
-        if file.file_path in ignore_files:
+        if file.file_path in default_configs["ignore_files"]:
             continue
         element = update_file(branch_to_put, file, repo)
         if element:
@@ -59,26 +63,24 @@ def github_init(name, files, configs = default_configs, ignore_files = []):
 
 
 def update_file(branch_to_put, file, repo):
-    file_name = file.name
-    if (file.folder_name):
-        file_name = file.folder_name + "/" + file.name
+
+    file_name = file.get_file_name()
 
     for r in replacements:
         if r['name'] == file.name:
             return InputGitTreeElement(file_name, '100644', 'blob', r["content"])
 
 
-    if file.file_path.endswith('.png') or file.file_path.endswith('.jpg'):
-        with open(file.file_path, 'rb') as f:
-            data = f.read()
-            data = base64.b64encode(data).decode()
-            sh = repo.create_git_blob(data, "base64").sha
-            return InputGitTreeElement(file_name, '100644', 'blob', sha=sh)
-    print("creating file : " + file.file_path)
-    with open(file.file_path) as f:
-        data = f.read()
 
 
+    type, data = file.get_data()
+
+    if type == "rb":
+
+        sh = repo.create_git_blob(data, "base64").sha
+        return InputGitTreeElement(file_name, '100644', 'blob', sha=sh)
+
+  
     return InputGitTreeElement(file_name, '100644', 'blob', data)
 
 
@@ -86,7 +88,7 @@ def update_file(branch_to_put, file, repo):
 def have_branch(name, repo):
     branches = repo.get_branches()
     if branches.totalCount == 0:
-        file = File("C:\\Users\\user\\PycharmProjects\\github_init\\empty_file")
+        file = File("C:\\Users\\user\\Desktop\\emily\projects\\@python_projects\\@Automation\\github_init\\empty_file")
         with open(file.file_path) as f:
             data = f.read()
         repo.create_file(file.name, "test", data, branch="main")
@@ -108,65 +110,46 @@ def have_repository(name, user, is_public = True):
     return repo
 
 
-def inicialize_behaviour(file_paths):
-    import json
-    for file in file_paths:
-        file_name = os.path.basename(file)
-        print(file_name)
-        if not file_name == 'build_configurations.json':
-            continue
-        with open(file) as f:
-            data = json.loads(f.read())
-        build_configurations(file.replace(file_name,''), data)
-        return
-
-def build_configurations(dir, data):
-    if 'create' in data:
-        for file_to_make in data['create']:
-            with open(dir + file_to_make['name'], 'w') as f:
-                f.write(file_to_make['content'])
-    if 'replace' in data:
-        for replacer in data['replace']:
-            replacements.append({'name':replacer['name']
-                                 , 'content': replacer['content'].replace("'", '"')})
-
-
-def get_all_files_from(file_paths, dir = None):
-
-
-
+# Receives:
+    # file_paths -> a list of paths (str or dict)
+    # files_dir -> a Folder object, parent of the paths passed
+# Based on a path, will walk through it and
+# check if its a file. If it is, creates a file object for it.
+# If its a folder...
+    # 1- Creates File objects for every child file of the folder
+    # 2- Looks for a "build_configurations.json" file in the folder
+    # 3- Create Folder objects for every child folder
+    # 4- For every Folder, calls this function again. Go back to step 1!
+def get_all_files_from(file_paths, files_dir:Folder=None):
 
     all_files = []
 
     for path in file_paths:
-        if os.path.isdir(path):
-            nlist = [path + "/" + x for x in os.listdir(path)]
-            inicialize_behaviour(nlist)
-            nlist = [path + "/" + x for x in os.listdir(path)]
-            path = os.path.basename(path)
 
-            if path == "__pycache__":
+        path_str = path
+        if isinstance(path, dict):
+            path_str = path['str']
+
+
+        if os.path.isdir(path_str):
+
+            new_folder = Folder(path, files_dir)
+
+            nlist = [path_str + "/" + x for x in os.listdir(path_str)]
+            inicialize_behaviour(nlist)
+            # nlist = [path_str + "/" + x for x in os.listdir(path_str)]
+
+            base_path_str = os.path.basename(path_str)
+
+            # Default folders that the system doesnt commit
+            if base_path_str in ["__pycache__", 'node_modules']:
                 continue
-            if dir:
-                path = dir + '/' + path
-            all_files += get_all_files_from(nlist, path)
+
+            all_files += get_all_files_from(nlist, new_folder)
             continue
 
-        all_files.append(File(path, dir))
+        all_files.append(File(path, files_dir))
 
     return all_files
 
 
-class File:
-    file_path: str
-    name: str
-    folder_name: str
-
-
-    def __init__(self, file_path, folder_name=None):
-        self.file_path = file_path
-
-
-        name = os.path.basename(file_path)
-        self.name = name
-        self.folder_name = folder_name
